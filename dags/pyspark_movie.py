@@ -5,7 +5,7 @@ from airflow import DAG
 
 from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
-from airflow.operators.python import PythonVirtualenvOperator
+from airflow.operators.python import PythonVirtualenvOperator, BranchPythonOperator
 
 with DAG(
     'pyspark_movie',
@@ -23,7 +23,7 @@ with DAG(
 ) as dag:
 
     def repartition(ds_nodash):
-        from repartition.repartition import repartition
+        from spark_air.repartition import re_partition
 
         repartition(ds_nodash)
 
