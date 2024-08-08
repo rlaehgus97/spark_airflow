@@ -10,15 +10,16 @@ from airflow.operators.python import PythonVirtualenvOperator, BranchPythonOpera
 with DAG(
     'pyspark_movie',
     default_args={
-        'depends_on_past': True,
+        'depends_on_past': False,
         'retries': 1,
         'retry_delay': timedelta(seconds=3),
     },
     description='movie data with pyspark and airflow',
-    schedule="10 4 * * * ",
+    schedule="10 2 * * * ",
     start_date=datetime(2015, 1, 1),
-    end_date=datetime(2015, 1, 30),
+    end_date=datetime(2015, 12, 31),
     catchup=True,
+    max_active_runs=1,
     tags=['pyspark', 'spark',  'movies'],
 ) as dag:
 
@@ -27,7 +28,7 @@ with DAG(
 
         repartition(ds_nodash)
 
-    def path_exist(ds_nodash)
+    def path_exist(ds_nodash):
         import os
 
         home=os.path.expanduser("~")
@@ -66,12 +67,12 @@ with DAG(
     )
 
     task_branch = BranchPythonOperator(
-        task_id="branch.op"
+        task_id="branch.op",
         python_callable=path_exist,
     )
 
-    task_start = gen_emp('start')
-    task_end = gen_emp('end','all_done')
+    task_start = EmptyOperator(task_id="start")
+    task_end = EmptyOperator(task_id="end")
 
 #Graph
     task_start >> task_branch >> [re_partition, rm_dir]
